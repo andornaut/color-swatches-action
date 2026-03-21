@@ -12,7 +12,7 @@ if (files.length === 0) {
   process.exit(1);
 }
 
-const hexPattern = /(?<=["'\s])#([0-9a-fA-F]{3,8})\b/g;
+const hexPattern = /(?<=["'`\s])#([0-9a-fA-F]{3,8})\b/g;
 const colors = new Map();
 
 function expand(hex) {
