@@ -1,0 +1,32 @@
+name: Color Swatches
+description: Extract hex colors from files and generate SVG swatches
+
+inputs:
+  out-dir:
+    description: Output directory for SVG swatch files
+    required: true
+  files:
+    description: Space-separated list of files to extract colors from (supports globs)
+    required: true
+  commit:
+    description: Whether to commit and push generated swatches
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Generate swatches
+      shell: bash
+      run: node "${{ github.action_path }}/color-swatches.mjs" "${{ inputs.out-dir }}" ${{ inputs.files }}
+
+    - name: Commit swatches
+      if: inputs.commit == 'true'
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add "${{ inputs.out-dir }}/"
+        git diff --cached --quiet && echo "No changes" && exit 0
+        git commit -m "[skip ci] Generate color swatches"
+        git push
