@@ -38,7 +38,9 @@ for (const hex of colors.keys()) {
   const alpha = hex.length === 8 ? hex.slice(6) : "ff";
   const opacity = parseInt(alpha, 16) / 255;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect width="16" height="16" rx="3" fill="#${rgb}" opacity="${opacity}" stroke="#555" stroke-width="1"/></svg>`;
-  writeFileSync(`${outDir}/${hex}.svg`, svg);
+  const path = `${outDir}/${hex}.svg`;
+  writeFileSync(path, svg);
+  console.log(path);
 }
 
 console.log(`Generated ${colors.size} swatches in ${outDir}/`);
