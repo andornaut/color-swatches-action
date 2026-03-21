@@ -1,0 +1,13 @@
+/* Example colors used to generate the swatch table in this README. */
+
+:root {
+  --red: #ff0000;
+  --green: #00ff00;
+  --blue: #0000ff;
+  --yellow: #ffff00;
+  --cyan: #00ffff;
+  --magenta: #ff00ff;
+  --white: #ffffff;
+  --grey: #808080;
+  --black: #000000;
+}
