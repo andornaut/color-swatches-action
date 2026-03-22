@@ -34,13 +34,24 @@ if [[ -z "$FILES" || -z "$OUT_DIR" ]]; then
 fi
 
 if [[ -z "$PATHS" ]]; then
-  PATHS="${FILES%/*}/**"
+  if [[ "$FILES" == */* ]]; then
+    PATHS="${FILES%/*}/**"
+  else
+    PATHS="$FILES"
+  fi
 fi
 
 WORKFLOW_DIR=".github/workflows"
 WORKFLOW_FILE="$WORKFLOW_DIR/generate-swatches.yml"
 
 mkdir -p "$WORKFLOW_DIR"
+
+PATHS_YAML=""
+IFS=',' read -ra PATH_ENTRIES <<< "$PATHS"
+for p in "${PATH_ENTRIES[@]}"; do
+  p="$(echo "$p" | xargs)"
+  PATHS_YAML+="      - ${p}"$'\n'
+done
 
 cat > "$WORKFLOW_FILE" << EOF
 name: Generate color swatches
@@ -49,8 +60,7 @@ on:
   push:
     branches: [main]
     paths:
-      - ${PATHS}
-
+${PATHS_YAML}
   workflow_dispatch:
 
 permissions:
@@ -60,7 +70,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: andornaut/color-swatches-action@main
         with:

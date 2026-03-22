@@ -18,7 +18,9 @@ runs:
   steps:
     - name: Generate swatches
       shell: bash
-      run: node "${{ github.action_path }}/color-swatches.mjs" "${{ inputs.out-dir }}" ${{ inputs.files }}
+      run: |
+        read -ra file_args <<< "${{ inputs.files }}"
+        node "${{ github.action_path }}/color-swatches.mjs" "${{ inputs.out-dir }}" "${file_args[@]}"
 
     - name: Commit swatches
       if: inputs.commit == 'true'
