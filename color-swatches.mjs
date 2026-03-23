@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { readFileSync, mkdirSync, writeFileSync } from "fs";
 import { deflateSync } from "zlib";
 

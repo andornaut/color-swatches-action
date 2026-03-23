@@ -1,6 +1,6 @@
 # color-swatches-action
 
-A GitHub Action that extracts hex color codes from files and generates SVG color swatches.
+A GitHub Action and CLI tool that extracts hex color codes from files and generates color swatch images (SVG or PNG).
 
 Supports all CSS/VS Code hex formats: `#RGB`, `#RGBA`, `#RRGGBB`, and `#RRGGBBAA`.
 
@@ -37,7 +37,8 @@ Add to your workflow:
 | Input | Description | Default |
 | ----- | ----------- | ------- |
 | `files` | Space-separated files to extract colors from (supports globs) | *required* |
-| `out-dir` | Output directory for SVG swatch files | *required* |
+| `format` | Output format: `svg` or `png` | `svg` |
+| `out-dir` | Output directory for swatch files | *required* |
 | `commit` | Whether to commit and push generated swatches | `true` |
 
 ### Example workflow
@@ -68,6 +69,30 @@ jobs:
           out-dir: 'swatches'
 ```
 
+## CLI / npm usage
+
+The script can be installed as an npm package directly from GitHub:
+
+```bash
+npm install github:andornaut/color-swatches-action
+```
+
+Then run it via npx or an npm script:
+
+```bash
+npx color-swatches [--format svg|png] <out-dir> <file...>
+```
+
+Example npm script in `package.json`:
+
+```json
+{
+  "scripts": {
+    "swatches": "color-swatches --format png swatches themes/*.json"
+  }
+}
+```
+
 ## Quick setup
 
 Run the setup script to generate the workflow file in your repo:
@@ -80,7 +105,7 @@ bash <(curl -s https://raw.githubusercontent.com/andornaut/color-swatches-action
 
 ## Referencing swatches in markdown
 
-The generated SVG files are named by hex value (e.g. `ff0000.svg`). Reference them in your README:
+The generated files are named by hex value (e.g. `ff0000.svg` or `ff0000.png`). Reference them in your README:
 
 ```markdown
 | Color | Hex | Usage |

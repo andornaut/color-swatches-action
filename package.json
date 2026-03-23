@@ -1,0 +1,10 @@
+{
+	"name": "color-swatches",
+	"version": "1.0.0",
+	"description": "Generate 16x16 color swatch images from hex colors in files",
+	"bin": {
+		"color-swatches": "./color-swatches.mjs"
+	},
+	"type": "module",
+	"license": "MIT"
+}
