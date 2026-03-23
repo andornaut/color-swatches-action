@@ -19,7 +19,7 @@ runs:
     - name: Generate swatches
       shell: bash
       run: |
-        read -ra file_args <<< "${{ inputs.files }}"
+        file_args=(${{ inputs.files }})
         node "${{ github.action_path }}/color-swatches.mjs" "${{ inputs.out-dir }}" "${file_args[@]}"
 
     - name: Commit swatches
