@@ -7,19 +7,30 @@ on:
       - README.md
       - color-swatches.mjs
       - action.yml
-
   workflow_dispatch:
 
+# Write access is granted only to the job that commits
 permissions:
-  contents: write
+  contents: read
+
+# Keyed on the branch rather than the ref, so two pushes in quick succession do
+# not race to commit the same files.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   generate:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7.0.1
+    permissions:
+      contents: write
 
-      - uses: ./
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Generate swatches
+        uses: ./
         with:
-          files: 'README.md'
-          out-dir: 'swatches'
+          files: "README.md"
+          out-dir: "swatches"
