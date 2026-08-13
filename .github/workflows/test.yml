@@ -1,15 +1,15 @@
-name: Generate example swatches
+name: Test
 
+# Every branch, not just main and pull requests: work lands on main directly as
+# often as it arrives through one, so a check that only runs on main is a check
+# that runs after the fact.
 on:
   push:
+    branches: ["**"]
+  pull_request:
     branches: [main]
-    paths:
-      - README.md
-      - color-swatches.mjs
-      - action.yml
   workflow_dispatch:
 
-# Write access is granted only to the job that commits
 permissions:
   contents: read
 
@@ -23,17 +23,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  generate:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
 
-      - name: Generate swatches
-        uses: ./
+      - name: Set up Node
+        uses: actions/setup-node@v7.0.0
         with:
-          files: "README.md"
-          out-dir: "swatches"
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # The action installs the swatch generator through this script, so it is
+      # as much of the shipped surface as the JavaScript beside it.
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: "."

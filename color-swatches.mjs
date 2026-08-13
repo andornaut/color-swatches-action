@@ -18,7 +18,9 @@ if (formatIdx !== -1) {
 
 const outDir = args[0];
 if (!outDir) {
-  console.error("Usage: node color-swatches.mjs [--format svg|png] <out-dir> [file...]");
+  console.error(
+    "Usage: node color-swatches.mjs [--format svg|png] <out-dir> [file...]",
+  );
   process.exit(1);
 }
 
@@ -32,8 +34,12 @@ const hexPattern = /(?<=["'`\s]|^)#([0-9a-fA-F]{3,8})\b/gm;
 const colors = new Set();
 
 function expand(hex) {
-  if (hex.length === 3) return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-  if (hex.length === 4) return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+  if (hex.length === 3)
+    return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  if (hex.length === 4)
+    return (
+      hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3]
+    );
   return hex;
 }
 
@@ -70,7 +76,8 @@ function crc32(buf) {
     table[i] = c;
   }
   let crc = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) crc = table[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
+  for (let i = 0; i < buf.length; i++)
+    crc = table[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
   return (crc ^ 0xffffffff) >>> 0;
 }
 
@@ -128,4 +135,6 @@ for (const hex of colors) {
   console.log(path);
 }
 
-console.log(`Generated ${colors.size} ${format.toUpperCase()} swatches in ${outDir}/`);
+console.log(
+  `Generated ${colors.size} ${format.toUpperCase()} swatches in ${outDir}/`,
+);
