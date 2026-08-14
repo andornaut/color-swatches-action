@@ -8,6 +8,10 @@ on:
     branches: ["**"]
   pull_request:
     branches: [main]
+  # Called by the release workflow, so that nothing is published that this has
+  # not passed. Workflows do not wait on each other, so a green Test run beside
+  # a release says nothing about whether the release waited for it.
+  workflow_call:
   workflow_dispatch:
 
 permissions:
