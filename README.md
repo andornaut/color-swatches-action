@@ -42,7 +42,7 @@ Add to your workflow:
 | `files`   | Space-separated files to extract colors from (supports globs) | _required_ |
 | `format`  | Output format: `svg` or `png`                                 | `svg`      |
 | `out-dir` | Output directory for swatch files                             | _required_ |
-| `commit`  | Whether to commit and push generated swatches                 | `true`     |
+| `commit`  | Commit the generated swatches and push them to the branch     | `false`    |
 
 ### Example workflow
 
@@ -70,6 +70,7 @@ jobs:
         with:
           files: "README.md"
           out-dir: "swatches"
+          commit: true
 ```
 
 ## CLI / npm usage

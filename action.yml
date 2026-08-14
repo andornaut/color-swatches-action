@@ -13,9 +13,12 @@ inputs:
     required: false
     default: "svg"
   commit:
-    description: Whether to commit and push generated swatches
+    description: >-
+      Commit the generated swatches and push them to the branch. Off by
+      default: writing to a repository is what a workflow asks for rather than
+      what it gets for calling this, and the job needs contents: write for it.
     required: false
-    default: "true"
+    default: "false"
 
 runs:
   using: composite
