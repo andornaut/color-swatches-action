@@ -1,0 +1,3 @@
+# Installed by the test workflow and by anyone running prettier locally.
+# swatches/ is not here: it is committed example output the action regenerates.
+node_modules/
