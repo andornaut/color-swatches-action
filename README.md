@@ -26,7 +26,7 @@ which runs this action against this README itself.
 Add to your workflow:
 
 ```yaml
-- uses: andornaut/color-swatches-action@main
+- uses: andornaut/color-swatches-action@v1
   with:
     files: "README.md"
     out-dir: "swatches"
@@ -61,9 +61,9 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
-      - uses: andornaut/color-swatches-action@main
+      - uses: andornaut/color-swatches-action@v1
         with:
           files: "README.md"
           out-dir: "swatches"

@@ -1,0 +1,90 @@
+name: Release
+
+# Every branch, not just main and pull requests: work lands on main directly as
+# often as it arrives through one, so a check that only runs on main is a check
+# that runs after the fact.
+on:
+  push:
+    branches: ["**"]
+    # Release versions only, the same set protect-release-tags guards. The major
+    # tag is a pointer this workflow moves, and a wider pattern would have it
+    # cut a second release of itself.
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Write access is granted only to the jobs that create releases
+permissions:
+  contents: read
+
+# Keyed on the branch rather than the ref, so the push event and the pull
+# request event for one branch share a group instead of running the same checks
+# twice. Qualified by the repository the branch lives in, since a fork names its
+# branches itself: a pull request from a fork's main would otherwise share a
+# group with a push to this one and cancel it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  # Publishing waits on the scan as well: a release is a durable artifact, and
+  # taking an attribution back off after one is cut means rewriting history that
+  # has already been published. Called only where a release can follow, since
+  # the scan workflow already runs on every push and pull request of its own
+  # accord.
+  attributions:
+    if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+    uses: ./.github/workflows/ai-attributions.yml
+
+  # Publishing waits on the same checks that guard main. Called only where a
+  # release can follow, since the Test workflow already runs on every push and
+  # pull request of its own accord, and the jobs below are gated the same way.
+  test:
+    if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+    uses: ./.github/workflows/test.yml
+
+  # The action ships its source, so there is nothing to build and no asset to
+  # attach: the release is the tag. Cut anyway, so a consumer has notes saying
+  # what moved between one version and the next.
+  release:
+    needs: [test, attributions]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v3.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          make_latest: "true"
+
+  # v1 follows the newest v1.x.y, which is what a workflow using the action
+  # tracks: a consumer moves with the releases that keep faith with v1 and
+  # stops at the one that does not. Moved from here rather than by hand, so
+  # publishing a release never asks for a force push from a workstation.
+  major-tag:
+    needs: release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Re-point the major tag
+        run: |
+          major="${GITHUB_REF_NAME%%.*}"
+          git tag --force "$major" "$GITHUB_SHA"
+          git push --force origin "refs/tags/$major"
