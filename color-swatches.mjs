@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
-import { readFileSync, mkdirSync, writeFileSync } from "fs";
+import {
+  readFileSync,
+  mkdirSync,
+  writeFileSync,
+  readdirSync,
+  unlinkSync,
+} from "fs";
 import { deflateSync } from "zlib";
 
 const args = process.argv.slice(2);
@@ -135,6 +141,27 @@ for (const hex of colors) {
   console.log(path);
 }
 
+// A colour dropped from the input would otherwise leave its swatch behind: the
+// file stays on disk, so a caller committing the directory sees nothing to
+// remove and the dead swatch stays in the repository for good.
+//
+// Only names this run could have written are considered, matched against the
+// swatch shape rather than the extension alone: out-dir may hold a screenshot
+// or a hand-made image, and those are not this script's to delete. A swatch in
+// the other format is left alone for the same reason.
+const generated = new Set([...colors].map((hex) => `${hex}.${format}`));
+const swatchName = new RegExp(`^[0-9a-f]{6}(?:[0-9a-f]{2})?\\.${format}$`);
+let removed = 0;
+for (const entry of readdirSync(outDir, { withFileTypes: true })) {
+  if (!entry.isFile()) continue;
+  if (!swatchName.test(entry.name) || generated.has(entry.name)) continue;
+  const stale = `${outDir}/${entry.name}`;
+  unlinkSync(stale);
+  console.log(`removed ${stale}`);
+  removed++;
+}
+
 console.log(
-  `Generated ${colors.size} ${format.toUpperCase()} swatches in ${outDir}/`,
+  `Generated ${colors.size} ${format.toUpperCase()} swatches in ${outDir}/` +
+    (removed ? `, removed ${removed} no longer in the input` : ""),
 );
