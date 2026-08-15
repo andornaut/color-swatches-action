@@ -50,10 +50,16 @@ jobs:
   # The action ships its source, so there is nothing to build and no asset to
   # attach: the release is the tag. Cut anyway, so a consumer has notes saying
   # what moved between one version and the next.
+  #
+  # `dev` is cut from main the same way, so a consumer tracking the rolling
+  # build follows a ref that moves only once the checks above have passed,
+  # rather than following the branch head and picking up whatever was last
+  # pushed.
   release:
     needs: [test, attributions]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    # The one job that writes: it creates and deletes releases and tags.
     permissions:
       contents: write
 
@@ -61,15 +67,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
 
+      # A release follows its tag, and updating one below does not move the tag
+      # GitHub already has, so `dev` has to be repointed here or the release's
+      # commit link and source archives would describe an older build than the
+      # ref beside them. Unmasked on purpose: a rejected tag push (tag
+      # protection, or credentials the checkout did not persist) has to fail
+      # the job rather than quietly leave `dev` naming an older commit.
+      - name: Move the dev tag to this commit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git tag --force dev
+          git push --force origin refs/tags/dev
+
+      # Updated in place rather than deleted and recreated. Deleting first left
+      # `dev` a 404 for the length of the run, and permanently if the run died
+      # in between. Release notes are generated for a version only: `dev` is
+      # re-cut on every push to main, so the range they would cover is one
+      # commit and says less than the line below.
       - name: Publish release
         uses: softprops/action-gh-release@v3.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          generate_release_notes: true
-          make_latest: "true"
+          tag_name: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref_name }}
+          name: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref_name }}
+          body: ${{ github.ref == 'refs/heads/main' && 'Latest build from main branch' || '' }}
+          generate_release_notes: ${{ github.ref != 'refs/heads/main' }}
+          make_latest: ${{ github.ref == 'refs/heads/main' && 'false' || 'true' }}
 
   # v1 follows the newest v1.x.y, which is what a workflow using the action
   # tracks: a consumer moves with the releases that keep faith with v1 and
