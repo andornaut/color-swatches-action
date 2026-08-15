@@ -54,7 +54,12 @@ jobs:
 
       # The action installs the swatch generator through this script, so it is
       # as much of the shipped surface as the JavaScript beside it.
+      #
+      # node_modules is excluded because the step above installed it: shellcheck
+      # walks the tree it is given, and a dependency shipping a shell script of
+      # its own would fail this on findings nobody here can fix.
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
         with:
+          ignore_paths: node_modules
           scandir: "."
