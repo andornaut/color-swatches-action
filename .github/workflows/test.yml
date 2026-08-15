@@ -52,14 +52,17 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # The action installs the swatch generator through this script, so it is
-      # as much of the shipped surface as the JavaScript beside it.
+      # -x follows a `source` into the file it names and -P SCRIPTDIR looks for
+      # it beside the script doing the sourcing, which shellcheck cannot resolve
+      # on its own. Set everywhere rather than only where something sources
+      # today, so a script that starts to is already covered.
       #
-      # node_modules is excluded because the step above installed it: shellcheck
-      # walks the tree it is given, and a dependency shipping a shell script of
-      # its own would fail this on findings nobody here can fix.
+      # node_modules is skipped because a Lint job that installs dependencies
+      # would otherwise answer for shell a dependency ships.
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
+        env:
+          SHELLCHECK_OPTS: -x -P SCRIPTDIR
         with:
           ignore_paths: node_modules
           scandir: "."
