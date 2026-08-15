@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import {
-  readFileSync,
   mkdirSync,
-  writeFileSync,
   readdirSync,
+  readFileSync,
   unlinkSync,
+  writeFileSync,
 } from "fs";
 import { deflateSync } from "zlib";
 
@@ -71,7 +71,14 @@ function createSvg(r, g, b, a) {
   const rgb = `${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
   const opacity = a < 255 ? parseFloat((a / 255).toFixed(4)) : 1;
   const opacityAttr = opacity < 1 ? ` opacity="${opacity}"` : "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect width="16" height="16" rx="3" fill="#${rgb}"${opacityAttr} stroke="#555" stroke-width="1"/></svg>`;
+  // Concatenated rather than wrapped: a newline inside the markup would reach
+  // the committed swatches, so every break here falls between the pieces.
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">` +
+    `<rect width="16" height="16" rx="3" fill="#${rgb}"${opacityAttr}` +
+    ` stroke="#555" stroke-width="1"/>` +
+    `</svg>`
+  );
 }
 
 function crc32(buf) {

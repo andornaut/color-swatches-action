@@ -8,10 +8,15 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "lint": "prettier --check .",
+    "lint": "prettier --check . && eslint .",
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "eslint-plugin-sort-destructure-keys": "^3.0.0",
+    "globals": "^17.6.0",
     "prettier": "3.9.6"
   }
 }
