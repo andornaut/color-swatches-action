@@ -1,3 +1,9 @@
 # Installed by the test workflow and by anyone running prettier locally.
 # swatches/ is not here: it is committed example output the action regenerates.
 node_modules/
+
+# AI agent instructions, local only. Named here as well as in the global
+# ignore, which a session working from a fresh clone does not have.
+AGENTS.md
+CLAUDE.md
+GEMINI.md
