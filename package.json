@@ -8,7 +8,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "lint": "prettier --check . && eslint .",
+    "lint": "prettier --check . && eslint --max-warnings 0 .",
     "format": "prettier --write ."
   },
   "devDependencies": {
