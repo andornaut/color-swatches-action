@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "prettier --check . && eslint --max-warnings 0 .",
-    "format": "prettier --write ."
+    "format": "prettier --write . && eslint --fix ."
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
