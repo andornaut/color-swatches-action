@@ -7,6 +7,9 @@
   },
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": ">=24.13.1"
+  },
   "scripts": {
     "lint": "prettier --check . && eslint --max-warnings 0 .",
     "format": "prettier --write . && eslint --fix ."
