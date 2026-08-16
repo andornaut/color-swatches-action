@@ -40,12 +40,14 @@ const hexPattern = /(?<=["'`\s]|^)#([0-9a-fA-F]{3,8})\b/gm;
 const colors = new Set();
 
 function expand(hex) {
-  if (hex.length === 3)
+  if (hex.length === 3) {
     return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-  if (hex.length === 4)
+  }
+  if (hex.length === 4) {
     return (
       hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3]
     );
+  }
   return hex;
 }
 
@@ -59,7 +61,9 @@ for (const file of files) {
   }
   for (const match of content.matchAll(hexPattern)) {
     const raw = match[1].toLowerCase();
-    if (raw.length === 5 || raw.length === 7) continue;
+    if (raw.length === 5 || raw.length === 7) {
+      continue;
+    }
     const expanded = expand(raw);
     colors.add(expanded);
   }
@@ -85,12 +89,15 @@ function crc32(buf) {
   const table = new Uint32Array(256);
   for (let i = 0; i < 256; i++) {
     let c = i;
-    for (let j = 0; j < 8; j++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    for (let j = 0; j < 8; j++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
     table[i] = c;
   }
   let crc = 0xffffffff;
-  for (let i = 0; i < buf.length; i++)
+  for (let i = 0; i < buf.length; i++) {
     crc = table[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
+  }
   return (crc ^ 0xffffffff) >>> 0;
 }
 
@@ -160,8 +167,12 @@ const generated = new Set([...colors].map((hex) => `${hex}.${format}`));
 const swatchName = new RegExp(`^[0-9a-f]{6}(?:[0-9a-f]{2})?\\.${format}$`);
 let removed = 0;
 for (const entry of readdirSync(outDir, { withFileTypes: true })) {
-  if (!entry.isFile()) continue;
-  if (!swatchName.test(entry.name) || generated.has(entry.name)) continue;
+  if (!entry.isFile()) {
+    continue;
+  }
+  if (!swatchName.test(entry.name) || generated.has(entry.name)) {
+    continue;
+  }
   const stale = `${outDir}/${entry.name}`;
   unlinkSync(stale);
   console.log(`removed ${stale}`);
@@ -169,6 +180,7 @@ for (const entry of readdirSync(outDir, { withFileTypes: true })) {
 }
 
 console.log(
-  `Generated ${colors.size} ${format.toUpperCase()} swatches in ${outDir}/` +
-    (removed ? `, removed ${removed} no longer in the input` : ""),
+  `Generated ${colors.size} ${format.toUpperCase()} swatches in ${outDir}/${
+    removed ? `, removed ${removed} no longer in the input` : ""
+  }`,
 );
