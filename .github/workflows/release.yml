@@ -62,7 +62,8 @@ jobs:
     # six minutes, so a job still going at fifteen has hung rather than failed.
     timeout-minutes: 15
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    # The one job that writes: it creates and deletes releases and tags.
+    # One of the two jobs that write: it publishes releases and moves the
+    # `dev` tag.
     permissions:
       contents: write
 
