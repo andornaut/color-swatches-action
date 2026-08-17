@@ -65,7 +65,9 @@ jobs:
       # today, so a script that starts to is already covered.
       #
       # node_modules is skipped because a Lint job that installs dependencies
-      # would otherwise answer for shell a dependency ships.
+      # would otherwise answer for shell a dependency ships. .husky/_ is the
+      # same case one step removed: husky writes its hook stubs there from the
+      # prepare script npm ci runs, and husky.sh carries no shebang.
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
         env:
@@ -77,5 +79,5 @@ jobs:
           # that did not touch them. Dependabot does not read an action input,
           # so this moves by hand.
           version: v0.11.0
-          ignore_paths: node_modules
+          ignore_paths: node_modules .husky
           scandir: "."
