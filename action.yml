@@ -1,5 +1,10 @@
 name: Color Swatches
 description: Extract hex colors from files and generate color swatches
+author: andornaut
+
+branding:
+  icon: droplet
+  color: purple
 
 inputs:
   out-dir:
