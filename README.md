@@ -1,7 +1,7 @@
 # color-swatches-action
 
 [![CI](https://github.com/andornaut/color-swatches-action/actions/workflows/release.yml/badge.svg)](https://github.com/andornaut/color-swatches-action/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/MIT)
 
 A GitHub Action and CLI tool that extracts hex color codes from files and generates color swatch images (SVG or PNG).
 
