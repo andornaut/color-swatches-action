@@ -89,7 +89,7 @@ jobs:
       # re-cut on every push to main, so the range they would cover is one
       # commit and says less than the line below.
       - name: Publish release
-        uses: softprops/action-gh-release@v3.0.2
+        uses: softprops/action-gh-release@v3.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
