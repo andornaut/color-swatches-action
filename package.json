@@ -13,8 +13,13 @@
   },
   "scripts": {
     "prepare": "husky",
-    "lint": "prettier --check . && eslint --max-warnings 0 .",
-    "format": "prettier --write . && eslint --fix ."
+    "lint": "make lint",
+    "format": "make exec COMMAND='npm run format:internal'",
+    "lint:internal": "prettier --check . && eslint --max-warnings 0 .",
+    "format:internal": "prettier --write . && eslint --fix .",
+    "check": "make check",
+    "test": "make test",
+    "build": "make build"
   },
   "//": "WORKAROUND: https://github.com/advisories/GHSA-g3hv-75wg-m249. Remove when upstream dependency ranges require patched minimatch versions.",
   "overrides": {
