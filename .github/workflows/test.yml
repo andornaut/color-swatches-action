@@ -47,53 +47,16 @@ jobs:
           # in .git/config for a later step to read.
           persist-credentials: false
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v7.1.0
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5.7.0
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          version: v29.9.3
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4.4.1
+        with:
+          version: v0.38.2
+          driver: docker
 
       - name: Lint
-        run: npm run lint
-
-      # -x follows a `source` into the file it names and -P SCRIPTDIR looks for
-      # it beside the script doing the sourcing, which shellcheck cannot resolve
-      # on its own. Set everywhere rather than only where something sources
-      # today, so a script that starts to is already covered.
-      #
-      # node_modules is skipped because a Lint job that installs dependencies
-      # would otherwise answer for shell a dependency ships. .husky/_ is the
-      # same case one step removed: husky writes its hook stubs there from the
-      # prepare script npm ci runs, and husky.sh carries no shebang.
-      - name: Run ShellCheck
-        # Followed at the commit rather than at the 2.0.0 tag, which is the newest
-        # the action has: it has had no release since 2023, so nothing upstream
-        # would notice the tag being moved. The tag is named beside the sha so a
-        # reader can tell which release this is.
-        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
-        env:
-          SHELLCHECK_OPTS: -x -P SCRIPTDIR
-        with:
-          # Pinned rather than the action's `stable` default, which names a
-          # moving release the action downloads at run time: without this a
-          # ShellCheck release turns every one of these gates red on a commit
-          # that did not touch them. Dependabot does not read an action input,
-          # so this moves by hand.
-          version: v0.11.0
-          ignore_paths: node_modules .husky
-          scandir: "."
-
-      # The action bundles markdownlint-cli2, so its own tag is the tool pin and
-      # Dependabot proposes the bump through the github-actions ecosystem. It
-      # fetches nothing at run time, so a slow host cannot turn this red.
-      - name: Run markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v25.0.0
-        with:
-          # Empty on purpose. The action defaults this to `*.{md,markdown}`,
-          # which is the repository root only, and anything passed here outranks
-          # the `globs` in .markdownlint-cli2.yaml. Empty leaves the config file
-          # deciding, so this gate and a local `markdownlint-cli2` read one list.
-          globs: ""
+        run: make lint
