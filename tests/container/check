@@ -19,13 +19,13 @@ case "$task" in
         done
         ;;
     lint)
-        bash -n tests/container/run tests/container/staged tests/container/staged-git
+        bash -n tests/container/run
         sh -n tests/container/check
-        npm run lint:internal
+        npm run lint
         markdownlint-cli2
         find . -type f -name '*.sh' -not -path './node_modules/*' -not -path './.husky/*' \
             -exec shellcheck -x -P SCRIPTDIR {} +
-        shellcheck -x -P SCRIPTDIR tests/container/run tests/container/staged tests/container/staged-git tests/container/check
+        shellcheck -x -P SCRIPTDIR tests/container/run tests/container/check
         ;;
     test)
         printf '%s\n' 'No test suite is declared.' >&2
