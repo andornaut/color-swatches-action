@@ -120,8 +120,8 @@ The generated files are named by hex value (e.g. `ff0000.svg` or `ff0000.png`). 
 ## Container checks
 
 Run `make check` for lint in isolated stock containers.
-Docker, Make and Python 3 are required. Locked dependencies are prepared once
-and reused by the native and Markdown phases. Shell tooling runs separately.
+Docker and Make are required. Each native and Markdown phase installs its locked
+dependencies in a disposable container. Shell tooling runs separately.
 
 Native commands such as `npm run lint` and `npm run format` run on
 the host with the project's Node.js version and installed dependencies. The
